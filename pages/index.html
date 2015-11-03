@@ -1,0 +1,337 @@
+{# ------------------------------------------------------- #}
+
+{# YOUR HOMEPAGE #}
+
+{# Webhook uses the SWIG.js (like Djagno/Twig) templating system. Their documentation is here: #}
+{# http://paularmstrong.github.io/swig/docs/tags/ #}
+
+{# Learn about calling data into Webhook pages here: #}
+{# http://www.webhook.com/docs/template-rules-and-filters/ #}
+
+{# ------------------------------------------------------- #}
+
+{# Confused what extends and blocks do? Watch a primer: #}
+{# http://www.webhook.com/docs/template-inheritance-blocks/ #}
+{% extends "templates/partials/base.html" %}
+
+{# This sets our page <title>. It will append "- Homepage" to the site title defined in base. #}
+{% block title %}{% parent %} - Homepage{% endblock %}
+
+{% block content %}
+
+  <div class="container" style="display: none;">
+    <div rv-if="data.spontaneous < class_select">
+      <h1>Spell Uses</h1>
+      <div>0) <input type="checkbox"/> <input type="checkbox"/> <input type="checkbox"/> <input type="checkbox"/> <input type="checkbox"/> <input type="checkbox"/> <input type="checkbox"/> <input type="checkbox"/> <input type="checkbox"/> <input type="checkbox"/> <input type="checkbox"/> <input type="checkbox"/></div>
+      <div>1) <input type="checkbox"/> <input type="checkbox"/> <input type="checkbox"/> <input type="checkbox"/> <input type="checkbox"/> <input type="checkbox"/> <input type="checkbox"/> <input type="checkbox"/> <input type="checkbox"/> <input type="checkbox"/> <input type="checkbox"/> <input type="checkbox"/></div>
+      <div>2) <input type="checkbox"/> <input type="checkbox"/> <input type="checkbox"/> <input type="checkbox"/> <input type="checkbox"/> <input type="checkbox"/> <input type="checkbox"/> <input type="checkbox"/> <input type="checkbox"/> <input type="checkbox"/> <input type="checkbox"/> <input type="checkbox"/></div>
+      <div>3) <input type="checkbox"/> <input type="checkbox"/> <input type="checkbox"/> <input type="checkbox"/> <input type="checkbox"/> <input type="checkbox"/> <input type="checkbox"/> <input type="checkbox"/> <input type="checkbox"/> <input type="checkbox"/> <input type="checkbox"/> <input type="checkbox"/></div>
+      <div>4) <input type="checkbox"/> <input type="checkbox"/> <input type="checkbox"/> <input type="checkbox"/> <input type="checkbox"/> <input type="checkbox"/> <input type="checkbox"/> <input type="checkbox"/> <input type="checkbox"/> <input type="checkbox"/> <input type="checkbox"/> <input type="checkbox"/></div>
+      <div>5) <input type="checkbox"/> <input type="checkbox"/> <input type="checkbox"/> <input type="checkbox"/> <input type="checkbox"/> <input type="checkbox"/> <input type="checkbox"/> <input type="checkbox"/> <input type="checkbox"/> <input type="checkbox"/> <input type="checkbox"/> <input type="checkbox"/></div>
+      <div>6) <input type="checkbox"/> <input type="checkbox"/> <input type="checkbox"/> <input type="checkbox"/> <input type="checkbox"/> <input type="checkbox"/> <input type="checkbox"/> <input type="checkbox"/> <input type="checkbox"/> <input type="checkbox"/> <input type="checkbox"/> <input type="checkbox"/></div>
+      <div>7) <input type="checkbox"/> <input type="checkbox"/> <input type="checkbox"/> <input type="checkbox"/> <input type="checkbox"/> <input type="checkbox"/> <input type="checkbox"/> <input type="checkbox"/> <input type="checkbox"/> <input type="checkbox"/> <input type="checkbox"/> <input type="checkbox"/></div>
+      <div>8) <input type="checkbox"/> <input type="checkbox"/> <input type="checkbox"/> <input type="checkbox"/> <input type="checkbox"/> <input type="checkbox"/> <input type="checkbox"/> <input type="checkbox"/> <input type="checkbox"/> <input type="checkbox"/> <input type="checkbox"/> <input type="checkbox"/></div>
+      <div>9) <input type="checkbox"/> <input type="checkbox"/> <input type="checkbox"/> <input type="checkbox"/> <input type="checkbox"/> <input type="checkbox"/> <input type="checkbox"/> <input type="checkbox"/> <input type="checkbox"/> <input type="checkbox"/> <input type="checkbox"/> <input type="checkbox"/></div>
+      <br/>
+      <button rv-on-click="data.clear_selects">Clear</button>
+    </div>
+    <h1>Spell Levels</h1>
+
+    <form action="">
+      <input type="radio" name="spell_level" rv-checked="data.spell_level" value="0"> 0th
+      <input type="radio" name="spell_level" rv-checked="data.spell_level" value="1"> 1st
+      <input type="radio" name="spell_level" rv-checked="data.spell_level" value="2"> 2nd
+      <input type="radio" name="spell_level" rv-checked="data.spell_level" value="3"> 3rd
+      <input type="radio" name="spell_level" rv-checked="data.spell_level" value="4"> 4th
+      <input type="radio" name="spell_level" rv-checked="data.spell_level" value="5"> 5th
+      <input type="radio" name="spell_level" rv-checked="data.spell_level" value="6"> 6th
+      <input type="radio" name="spell_level" rv-checked="data.spell_level" value="7"> 7th
+      <input type="radio" name="spell_level" rv-checked="data.spell_level" value="8"> 8th
+      <input type="radio" name="spell_level" rv-checked="data.spell_level" value="9"> 9th
+    </form>
+    <h1>Spell Cards</h1>
+
+    Class:
+    <select rv-value="data.class_select" rv-on-change="data.class_changed">
+      <option value="wiz" selected>Wizard</option>
+      <option value="sor">Sorcerer</option>
+      <option value="cleric">Cleric</option>
+      <option value="paladin">Paladin</option>
+      <option value="ranger">Ranger</option>
+      <option value="bard">Bard</option>
+      <option value="druid">Druid</option>
+    </select>
+
+    <br/>
+
+    <select rv-value="data.selected_spell">
+      <option rv-each-spell="data.current_spells < class_select spell_level" rv-value="spell.id">{ spell.name }</option>
+    </select>
+
+    <br/>
+    <br/>
+
+    <button rv-on-click="data.add_spell">Add</button>
+
+    <h1>Cards</h1>
+    <button rv-on-click="data.clear_cards">Clear Cards</button>
+    <br/>
+    <br/>
+    <div rv-unless="data.spontaneous < class_select">
+      <button rv-on-click="data.clear_memorizations">Clear Memorizations</button>
+      <br/>
+      <br/>
+    </div>
+
+    <div rv-each-card="data.get_cards < cards class_select spell_level">
+      <button rv-data-id="card.id" rv-on-click="data.removeCard">Remove</button>
+      <div  rv-unless="data.spontaneous < class_select">Memorizations: 
+        <input rv-checked="memorization.checked" rv-on-click="memorization.toggle" rv-each-memorization="card.get_memorizations < memorizations" type="checkbox"/>
+        <button rv-on-click="card.add_memorization">+</button>
+        <button rv-on-click="card.remove_memorization" rv-if="card.has_memorizations < memorizations">-</button>
+      </div>
+      <div>{ card.name }</div>
+      <div>{ card.spell_level }</div>
+      <div>{ card.school }</div>
+      <div>{ card.subschool }</div>
+      <div>{ card.descriptor }</div>
+      <div>{ card.casting_time }</div>
+      <div>{ card.components }</div>
+      <div>{ card.range }</div>
+      <div>{ card.targets }</div>
+      <div>{ card.duration }</div>
+      <div>{ card.saving_throw }</div>
+      <div>{ card.spell_resistence }</div>
+      <div><span rv-html="card.description_formated"></span></div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block scripts_extra %}
+
+<script>
+var data = {};
+  $(document).ready(function() {
+    var spellNames = [];
+    $.getJSON("/static/spells.json", function(spells) {
+
+      var wizardSpells = spells.filter(function(sp) { return sp.wiz !== "NULL"; });
+      var sorcererSpells = spells.filter(function(sp) { return sp.sor !== "NULL"; });
+      var clericSpells = spells.filter(function(sp) { return sp.cleric !== "NULL"; });
+      var rangerSpells = spells.filter(function(sp) { return sp.ranger !== "NULL"; });
+      var paladinSpells = spells.filter(function(sp) { return sp.paladin !== "NULL"; });
+      var bardSpells = spells.filter(function(sp) { return sp.bard !== "NULL"; });
+      var druidSpells = spells.filter(function(sp) { return sp.druid !== "NULL"; });
+
+      var addSpell = function(event, bound, noSave) {
+        var spell = spells.filter(function(sp) {
+          return sp.id == self.selected_spell;
+        })[0];
+
+        var alreadyIn = self.cards.filter(function(sp) {
+          return sp.id == self.selected_spell;
+        })
+
+        if (alreadyIn.length > 0) {
+          return;
+        }
+
+        self.cards.push(spell);
+
+        if (!noSave) {
+          saveData();
+        }
+
+        return spell;
+      };
+
+      data = {
+        selected_spell: 1,
+        spell_level: "0",
+        class_select: "wiz",
+        cards: [],
+        add_spell: addSpell,
+        get_cards: function() {
+          return data.cards.filter(function(sp) {
+            return sp[data.class_select] == data.spell_level
+          })
+        },
+        removeCard: function(event) {
+          var el = this;
+          var id = $(el).attr('data-id');
+
+          var index = self.cards.findIndex(function(sp) {
+            return sp.id == id;
+          });
+
+          if (index !== -1) {
+            self.cards[index].clear_memorizations();
+            self.cards.splice(index, 1);
+          }
+
+          saveData();
+        },
+        class_changed: function(event) {
+          saveData();
+        },
+        clear_cards: function(event) {
+          data.cards.forEach(function(sp) {
+            sp.clear_memorizations();
+          });
+          data.cards = [];
+
+          saveData();
+        },
+        clear_memorizations: function(event) {
+          data.cards.forEach(function(sp) {
+            sp.clear_memorizations();
+          });
+
+          saveData();
+        },
+        clear_selects: function(event) {
+          $(this).parent().find('input').prop('checked', false);
+        },
+        spontaneous: function() {
+          if (this.class_select === 'sor') {
+            return true;
+          }
+
+          return false;
+        },
+        current_spells: function() {
+          if (this.class_select === 'wiz') {
+            var arr = wizardSpells.filter(function(sp) { return sp.wiz == data.spell_level });
+            this.selected_spell = arr[0].id;
+            return arr;
+          } else if (this.class_select === 'sor') {
+            var arr = sorcererSpells.filter(function(sp) { return sp.sor == data.spell_level });
+            this.selected_spell = arr[0].id;
+            return arr;
+          } else if (this.class_select === 'druid') {
+            var arr = druidSpells.filter(function(sp) { return sp.druid == data.spell_level });
+            this.selected_spell = arr[0].id;
+            return arr;
+          } else if (this.class_select === 'cleric') {
+            var arr = clericSpells.filter(function(sp) { return sp.cleric == data.spell_level });
+            this.selected_spell = arr[0].id;
+            return arr;
+          } else if (this.class_select === 'paladin') {
+            var arr = paladinSpells.filter(function(sp) { return sp.paladin == data.spell_level });
+            this.selected_spell = arr[0] ? arr[0].id : 0;
+            return arr;
+          } else if (this.class_select === 'ranger') {
+            var arr = rangerSpells.filter(function(sp) { return sp.ranger == data.spell_level });
+            this.selected_spell = arr[0].id;
+            return arr;
+          } else if (this.class_select === 'bard') {
+            var arr = bardSpells.filter(function(sp) { return sp.bard == data.spell_level });
+            this.selected_spell = arr[0].id;
+            return arr;
+          }
+
+          this.selected_spell = spells[0].id;
+          return spells; 
+        }
+      };
+
+      spells.forEach(function(sp) {
+        sp.get_memorizations = function() {
+          return this.memorizations;
+        }
+
+        sp.remove_memorization = function() {
+          sp.memorizations.pop();
+
+          saveData();
+        }
+
+        sp.add_memorization = function(event, bound, checked, noSave) {
+          var memorization = {
+            checked: checked ? true : false
+          }
+
+          memorization.toggle = function(event, bound) {
+            memorization.checked = !memorization.checked;
+
+            saveData();
+          }
+
+          sp.memorizations.push(memorization);
+
+          if (!noSave) {
+            saveData();
+          }
+        }
+
+        sp.clear_memorizations = function() {
+          sp.memorizations = [];
+
+          saveData();
+        }
+
+        sp.has_memorizations = function() {
+          return sp.memorizations.length > 0;
+        }
+
+        sp.memorizations = [];
+      })
+
+      var self = data;
+
+      var saveData = function() {
+        var cards = [];
+
+        data.cards.forEach(function(sp) {
+          var mems = [];
+          sp.memorizations.forEach(function(mem) {
+            mems.push({ checked: mem.checked });
+          })
+          cards.push({ id: sp.id, memorizations: mems });
+        });
+
+        window.localStorage.setItem('saved_data', JSON.stringify({
+          class_select: data.class_select,
+          cards: cards, // Store this only as ids + memorizations, so they can be restored
+        }));
+      }
+
+      var restoreData = function() {
+        var saved = window.localStorage.getItem('saved_data');
+
+        if (!saved) {
+          return;
+        }
+
+        try {
+          var parsed = JSON.parse(saved);
+          console.log(parsed);
+
+          parsed.cards.forEach(function(card) {
+            data.selected_spell = card.id;
+
+            var sp = addSpell({}, {}, true);
+
+            card.memorizations.forEach(function(mems) {
+              sp.add_memorization({}, {}, mems.checked, true);
+            });
+          });
+
+          data.class_select = parsed.class_select;
+        } catch (e) {
+
+        }
+      }
+
+      restoreData();
+
+      rivets.bind($('.container'), {
+        data: data
+      })
+
+      $('.container').show();
+    });
+  });
+</script>
+
+{% endblock %}
